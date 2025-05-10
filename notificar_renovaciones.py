@@ -140,7 +140,7 @@ try:
                 }
 
                 headers = {
-                    "Authorization": "Bearer EAAI5ZBpi6QCUBO8Aj2SBWZAnQFF3FRRZBZBR0TpGB9wO3OXVQOl55iEvH7hrClJhau44Jf7U4VYEKjjq1HRkZCFV239TB9L3btWKa0wrqqtGv53RKsP47clUEIPVebmsPSAHAOdI7ZCojcpmVZAgdZA7d25QuK9IPzD1fj0KjrPUEkgSKoKlmEqOql3aZBfHgIdq9PhXtodUZD",  # <-- Reemplaza
+                    "Authorization": "Bearer EAAI5ZBpi6QCUBO9ZBUGqTexSs8DtZAAKpSyWmTqnMjpT0EJMrbKZC83ZBn8w6FZB19WlNY5URaGt8dy9MZC2BYEOO8sHZB9qtpdsDeuN5FuLaIg2jSDl3EA2vhzVaUeww6cwooffy3ZBaL8bjYbujH9jC87rHY3XtYLpleZAfFZAZCPZCZBUFZAImyl1IYaqaDxYK9TvT2zJfGXQqcZD",  # <-- Reemplaza
                     "Content-Type": "application/json"
                 }
 
@@ -148,12 +148,12 @@ try:
                 response = requests.post(url, json=payload, headers=headers)
 
                 if response.status_code == 200:
-                    print(f"✅ Mensaje enviado a {numero}")
+                    print(f" Mensaje enviado a {numero}")
                 else:
-                    print(f"❌ Error al enviar a {numero}: {response.text}")
+                    print(f" Error al enviar a {numero}: {response.text}")
 
 except Exception as e:
-    print("❌ Error general:", e)
+    print(" Error general:", e)
 
 finally:
     if 'conexion' in locals():
