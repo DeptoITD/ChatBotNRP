@@ -159,4 +159,4 @@ finally:
     if 'conexion' in locals():
         cursor.close()
         conexion.close()
-        print("🔌 Conexión cerrada.")
+        print("Conexión cerrada.")
