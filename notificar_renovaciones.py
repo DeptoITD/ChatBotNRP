@@ -2,9 +2,31 @@ import psycopg2
 import requests
 from datetime import datetime, timedelta
 
-# Leer números de teléfono desde el archivo
-with open("numeros.txt", "r") as archivo:
-    numeros_destino = [line.strip() for line in archivo if line.strip()]
+# Leer números de teléfono desde la tabla telefonos en la base de datos eventos_chatbot
+# with open("numeros.txt", "r") as archivo:
+#     numeros_destino = [line.strip() for line in archivo if line.strip()]
+try:
+    conexion = psycopg2.connect(
+        host = "localhost",
+        database = "eventos_chatbot",
+        user = "chatbot",
+        password = "IND_chatbot2025",
+        port = 5432
+    )
+
+    cursor = conexion.cursor()
+
+    # Ejecutar consulta para obtener los números de teléfono
+    cursor.execute("SELECT num_telefono FROM telefonos") 
+
+    #Recuperamos los datos de la consulta
+    resultados = cursor.fetchall()
+    telefonos = [fila[0] for fila in resultados]
+    print (telefonos)     
+
+except Exception as e:
+    print("No se puede conectar a la base de datos: ", e)
+
 
 # Conectar a la base de datos
 try:
@@ -23,7 +45,7 @@ try:
 
     # Consultar productos que vencen en esas fechas
     cursor.execute("""
-        SELECT producto, total, fecha_renovacion
+        SELECT producto, valor_total, fecha_renovacion
         FROM listado_programas
         WHERE fecha_renovacion = %s OR fecha_renovacion = %s
     """, (fechas_objetivo[0], fechas_objetivo[1]))
@@ -36,7 +58,7 @@ try:
         for producto, total, fecha in resultados:
             fecha_str = fecha.strftime('%d/%m/%Y')  # Formato requerido en la plantilla
 
-            for numero in numeros_destino:
+            for numero in telefonos:
                 payload = {
                     "messaging_product": "whatsapp",
                     "to": numero,
@@ -58,7 +80,7 @@ try:
                 }
 
                 headers = {
-                    "Authorization": "Bearer EAAI5ZBpi6QCUBO9ZBUGqTexSs8DtZAAKpSyWmTqnMjpT0EJMrbKZC83ZBn8w6FZB19WlNY5URaGt8dy9MZC2BYEOO8sHZB9qtpdsDeuN5FuLaIg2jSDl3EA2vhzVaUeww6cwooffy3ZBaL8bjYbujH9jC87rHY3XtYLpleZAfFZAZCPZCZBUFZAImyl1IYaqaDxYK9TvT2zJfGXQqcZD",  # <-- Reemplaza
+                    "Authorization": "Bearer EAAI5ZBpi6QCUBOz94ScqRczRf3v0VXZAwKK2ZAwTS817OYaZAOkYHw4cu54L1SG51lgHDZAeLM3mtTAo5cPfHvVuVXvWFBDUDKtx2Yfv2K4ZBNH1tzFRKAaQnh4RbfST0AV3QrqTaV84JO1XhIpTyXEBaOaWcU3voom1o4TS5FzKYbvr1NR2ftvdPNjNeZAovZBQh3nMTP1y50zszLoX",  # <-- Reemplaza
                     "Content-Type": "application/json"
                 }
 
