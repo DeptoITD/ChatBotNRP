@@ -5,13 +5,16 @@ from datetime import datetime, timedelta
 # Leer números de teléfono desde la tabla telefonos en la base de datos eventos_chatbot
 # with open("numeros.txt", "r") as archivo:
 #     numeros_destino = [line.strip() for line in archivo if line.strip()]
+import os
+from dotenv import load_dotenv
+
 try:
     conexion = psycopg2.connect(
-        host = "localhost",
-        database = "eventos_chatbot",
-        user = "chatbot",
-        password = "IND_chatbot2025",
-        port = 5432
+        host = os.getenv("DB_HOST"),
+        database = os.getenv("DB_NAME"),
+        user = os.getenv("DB_USER"),
+        password = os.getenv("DB_PASSWORD"),
+        port = os.getenv("DB_PORT")
     )
 
     cursor = conexion.cursor()
@@ -29,15 +32,15 @@ except Exception as e:
 
 
 # Conectar a la base de datos
-try:
-    conexion = psycopg2.connect(
-        host="localhost",
-        database="eventos_chatbot",
-        user="chatbot",
-        password="IND_chatbot2025",
-        port=5432
-    )
-    cursor = conexion.cursor()
+# try:
+#     conexion = psycopg2.connect(
+#         host="localhost",
+#         database="eventos_chatbot",
+#         user="chatbot",
+#         password="IND_chatbot2025",
+#         port=5432
+#     )
+#     cursor = conexion.cursor()
 
     # Calcular fechas objetivo (30 y 15 días desde hoy)
     hoy = datetime.now().date()
@@ -55,8 +58,9 @@ try:
     if not resultados:
         print("No hay renovaciones para notificar hoy.")
     else:
-        for producto, total, fecha in resultados:
+        for producto, total, divisa, proveedor, fecha in resultados:
             fecha_str = fecha.strftime('%d/%m/%Y')  # Formato requerido en la plantilla
+            precio = f"{divisa} ${total:,.0f}" 
 
             for numero in telefonos:
                 payload = {
@@ -72,19 +76,19 @@ try:
                                 "parameters": [
                                     { "type": "text", "text": producto },
                                     { "type": "text", "text": fecha_str },
-                                    { "type": "text", "text": f"${total:,.0f}" }
+                                    { "type": "text", "text": precio },
+                                    { "type": "text", "text": proveedor }
                                 ]
                             }
                         ]
                     }
                 }
-
                 headers = {
-                    "Authorization": "Bearer EAAI5ZBpi6QCUBOz94ScqRczRf3v0VXZAwKK2ZAwTS817OYaZAOkYHw4cu54L1SG51lgHDZAeLM3mtTAo5cPfHvVuVXvWFBDUDKtx2Yfv2K4ZBNH1tzFRKAaQnh4RbfST0AV3QrqTaV84JO1XhIpTyXEBaOaWcU3voom1o4TS5FzKYbvr1NR2ftvdPNjNeZAovZBQh3nMTP1y50zszLoX",  # <-- Reemplaza
+                    "Authorization": f"Bearer {os.getenv('TOKEN')}",  # <-- Reemplaza
                     "Content-Type": "application/json"
                 }
 
-                url = "https://graph.facebook.com/v18.0/641965869002719/messages"  # <-- Reemplaza también
+                url = f"https://graph.facebook.com/v18.0/{os.getenv('NUM_ID')}/messages"  # <-- Reemplaza también
                 response = requests.post(url, json=payload, headers=headers)
 
                 if response.status_code == 200:
