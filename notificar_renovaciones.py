@@ -84,6 +84,12 @@ import psycopg2
 import requests
 from datetime import datetime, timedelta
 
+import os
+from dotenv import load_dotenv  #se agrega para leer archivo .env
+
+load_dotenv()
+
+
 # Leer números de teléfono desde el archivo
 with open("numeros.txt", "r") as archivo:
     numeros_destino = [line.strip() for line in archivo if line.strip()]
@@ -91,11 +97,11 @@ with open("numeros.txt", "r") as archivo:
 # Conectar a la base de datos
 try:
     conexion = psycopg2.connect(
-        host="localhost",
-        database="renovaciones",
-        user="postgres",
-        password="1234",
-        port=5432
+        host=os.getenv("DB_HOST"),
+        database=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        port=os.getenv("DB_PORT")
     )
     cursor = conexion.cursor()
 
@@ -105,7 +111,7 @@ try:
 
     # Consultar productos que vencen en esas fechas
     cursor.execute("""
-        SELECT producto, total, fecha_renovacion
+        SELECT producto, total, divisa, proveedor, fecha_renovacion
         FROM renovaciones
         WHERE fecha_renovacion = %s OR fecha_renovacion = %s
     """, (fechas_objetivo[0], fechas_objetivo[1]))
@@ -115,8 +121,10 @@ try:
     if not resultados:
         print("No hay renovaciones para notificar hoy.")
     else:
-        for producto, total, fecha in resultados:
+        #573161173578
+        for producto, total, divisa, proveedor, fecha in resultados:
             fecha_str = fecha.strftime('%d/%m/%Y')  # Formato requerido en la plantilla
+            precio = f"{divisa} ${total:,.0f}" 
 
             for numero in numeros_destino:
                 payload = {
@@ -132,7 +140,8 @@ try:
                                 "parameters": [
                                     { "type": "text", "text": producto },
                                     { "type": "text", "text": fecha_str },
-                                    { "type": "text", "text": f"${total:,.0f}" }
+                                    { "type": "text", "text": precio },
+                                    { "type": "text", "text": proveedor }
                                 ]
                             }
                         ]
@@ -140,11 +149,11 @@ try:
                 }
 
                 headers = {
-                    "Authorization": "Bearer EAAI5ZBpi6QCUBO9ZBUGqTexSs8DtZAAKpSyWmTqnMjpT0EJMrbKZC83ZBn8w6FZB19WlNY5URaGt8dy9MZC2BYEOO8sHZB9qtpdsDeuN5FuLaIg2jSDl3EA2vhzVaUeww6cwooffy3ZBaL8bjYbujH9jC87rHY3XtYLpleZAfFZAZCPZCZBUFZAImyl1IYaqaDxYK9TvT2zJfGXQqcZD",  # <-- Reemplaza
+                    "Authorization": f"Bearer {os.getenv('TOKEN')}",  # <-- Reemplaza
                     "Content-Type": "application/json"
                 }
 
-                url = "https://graph.facebook.com/v18.0/641965869002719/messages"  # <-- Reemplaza también
+                url = f"https://graph.facebook.com/v18.0/{os.getenv("NUM_ID")}/messages"  # <-- Reemplaza también
                 response = requests.post(url, json=payload, headers=headers)
 
                 if response.status_code == 200:
