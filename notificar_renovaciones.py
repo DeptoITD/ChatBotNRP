@@ -1,27 +1,18 @@
-# import psycopg2        #Conecceion con la DB
-# import pandas as pd    #Leer y escribir archivos de datos como CSV, Excel
-# import requests        #para las peticiones
-# from datetime import datetime, timedelta
-# #                                                   actualizar fechas asumiendo pagoo
-# #Leer números cel
-# with open("numeros.txt", "r") as archivo:
-#     numeros_destino = [line.strip() for line in archivo if line.strip()]
+#Este script se encarga de enviar mensajes automatizados para
+#recordar a personas interesadas sobre la renovación de licencias de software dentro
+#del Grupo Indesco
 
-# #Conectar a la base de datos 
-# try:
-#     conexion = psycopg2.connect(
-#         host="localhost",
-#         database="renovaciones",
-#         user="postgres",
-#         password="1234",
-#         port=5432
-#     )
-#     cursor = conexion.cursor()
+#Librerías utilizadas
+import psycopg2  # Para la conexión a la base de datos
+import requests  # Para las peticiones al API de Meta
+import os  # Para interactuar con el sistema operativo
+from datetime import datetime, timedelta  # Para poder hacer las comparaciones respectivas de fecha
+from dotenv import load_dotenv  # Para leer el archivo de credenciales .env
 
-#     #Calcular fechas objetivo (30 y 15 días desde hoy)
-#     hoy = datetime.now().date()
-#     fechas_objetivo = [hoy + timedelta(days=30), hoy + timedelta(days=15)]
+# Cargamos variables de entorno para poder leer el archivo .env que contiene las credenciales para el funcionamiento del script
+load_dotenv()  
 
+<<<<<<< HEAD
 #     #Consultar productos que vencen en esas fechas
 #     cursor.execute("""
 #         SELECT producto, total, fecha_renovacion
@@ -95,7 +86,10 @@ with open("numeros.txt", "r") as archivo:
     numeros_destino = [line.strip() for line in archivo if line.strip()]
 
 # Conectar a la base de datos
+=======
+>>>>>>> develop
 try:
+    # Conexión a la base de datos
     conexion = psycopg2.connect(
         host=os.getenv("DB_HOST"),
         database=os.getenv("DB_NAME"),
@@ -105,14 +99,30 @@ try:
     )
     cursor = conexion.cursor()
 
-    # Calcular fechas objetivo (30 y 15 días desde hoy)
+    # Leer números de teléfono desde la tabla teléfonos
+    cursor.execute("SELECT num_telefono FROM telefonos")
+    telefonos = [fila[0] for fila in cursor.fetchall()]
+    
+    #Verifico que hayan números de telefono para enviar mensajes
+    if telefonos: 
+        print(f'Se han cargado {len(telefonos)} para enviar los mensajes')
+    else:
+        print(f'No hay teléfonos para enviar mensajes')
+        exit()
+
+    # Calcular fechas objetivo (30 días y 15 días)
     hoy = datetime.now().date()
     fechas_objetivo = [hoy + timedelta(days=30), hoy + timedelta(days=15)]
 
-    # Consultar productos que vencen en esas fechas
+    # Obtener productos a notificar mediante consulta a la base de datos.
     cursor.execute("""
+<<<<<<< HEAD
         SELECT producto, total, divisa, proveedor, fecha_renovacion
         FROM renovaciones
+=======
+        SELECT producto, valor_total, divisa, proveedor, fecha_renovacion
+        FROM listado_programas
+>>>>>>> develop
         WHERE fecha_renovacion = %s OR fecha_renovacion = %s
     """, (fechas_objetivo[0], fechas_objetivo[1]))
 
@@ -121,49 +131,72 @@ try:
     if not resultados:
         print("No hay renovaciones para notificar hoy.")
     else:
+<<<<<<< HEAD
         #573161173578
         for producto, total, divisa, proveedor, fecha in resultados:
             fecha_str = fecha.strftime('%d/%m/%Y')  # Formato requerido en la plantilla
             precio = f"{divisa} ${total:,.0f}" 
+=======
+        for producto, total, divisa, proveedor, fecha in resultados:
+            fecha_str = fecha.strftime('%d/%m/%Y')  # Formato requerido en la plantilla
+            precio = f"{divisa} ${total:,.0f}"  # Se concatena la divisa y el valor total
+>>>>>>> develop
 
-            for numero in numeros_destino:
+            for numero in telefonos:
+                # Petición a la API de Meta
                 payload = {
                     "messaging_product": "whatsapp",
                     "to": numero,
                     "type": "template",
                     "template": {
                         "name": "suscrip_venci",
-                        "language": { "code": "en_US" },
+                        "language": {"code": "en_US"},
                         "components": [
                             {
                                 "type": "body",
                                 "parameters": [
+<<<<<<< HEAD
                                     { "type": "text", "text": producto },
                                     { "type": "text", "text": fecha_str },
                                     { "type": "text", "text": precio },
                                     { "type": "text", "text": proveedor }
+=======
+                                    {"type": "text", "text": producto},
+                                    {"type": "text", "text": fecha_str},
+                                    {"type": "text", "text": precio},
+                                    {"type": "text", "text": proveedor}
+>>>>>>> develop
                                 ]
                             }
                         ]
                     }
                 }
-
                 headers = {
+<<<<<<< HEAD
                     "Authorization": f"Bearer {os.getenv('TOKEN')}",  # <-- Reemplaza
+=======
+                    # Recordar que el token tiene una duración de 60 días.
+                    "Authorization": f"Bearer {os.getenv('TOKEN')}",
+>>>>>>> develop
                     "Content-Type": "application/json"
                 }
+                url = f"https://graph.facebook.com/v18.0/{os.getenv('NUM_ID')}/messages"
 
+<<<<<<< HEAD
                 url = f"https://graph.facebook.com/v18.0/{os.getenv('NUM_ID')}/messages"  # <-- Reemplaza también
+=======
+>>>>>>> develop
                 response = requests.post(url, json=payload, headers=headers)
-
+                
                 if response.status_code == 200:
-                    print(f" Mensaje enviado a {numero}")
+                    print(f"Mensaje enviado a {numero}")
                 else:
-                    print(f" Error al enviar a {numero}: {response.text}")
+                    print(f"Error al enviar a {numero}: {response.text}")
 
 except Exception as e:
-    print(" Error general:", e)
+    print("Error general:", e)
 
+# Cerramos la conexión a la base de datos
 finally:
     if 'conexion' in locals():
         cursor.close()
