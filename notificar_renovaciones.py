@@ -99,4 +99,3 @@ finally:
         cursor.close()
         conexion.close()
         print("Conexión cerrada.")
-
