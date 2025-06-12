@@ -153,7 +153,7 @@ try:
                     "Content-Type": "application/json"
                 }
 
-                url = f"https://graph.facebook.com/v18.0/{os.getenv("NUM_ID")}/messages"  # <-- Reemplaza también
+                url = f"https://graph.facebook.com/v18.0/{os.getenv('NUM_ID')}/messages"  # <-- Reemplaza también
                 response = requests.post(url, json=payload, headers=headers)
 
                 if response.status_code == 200:
