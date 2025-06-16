@@ -39,8 +39,8 @@ try:
 
     # Consultar productos con renovación próxima
     cursor.execute("""
-        SELECT producto, total, divisa, proveedor, fecha_renovacion
-        FROM renovaciones
+        SELECT producto, valor_total, divisa, proveedor, fecha_renovacion
+        FROM listado_programas
         WHERE fecha_renovacion = %s OR fecha_renovacion = %s
     """, (fechas_objetivo[0], fechas_objetivo[1]))
 
