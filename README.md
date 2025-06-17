@@ -24,11 +24,13 @@ NUM_ID=
 
 Nos dirigimos a la ruta donde se aloja el script
 
+```
 /home/soporte/ProyectosInnovacion/ChatBotNRP
 ├── .env
 ├── .git/
 ├── .gitignore
 ├── notificar_renovaciones.py
+```
 
 Se instala la librería de entornos virtuales de Python para Ubuntu
 
@@ -43,12 +45,18 @@ python3 -m venv venv
 ```
 
 De esta manera, debe quedar una nueva carpeta en el directorio que contiene al script de esta manera
+
+```
 /home/soporte/ProyectosInnovacion/ChatBotNRP
 ├── .env
 ├── .git/
 ├── .gitignore
 ├── notificar_renovaciones.py
-├── venv/
+└── venv/
+    ├── bin/
+    ├── lib/
+    └── pyvenv.cfg
+```
 
 Para activar el entorno virtual, se ejecuta:
 
