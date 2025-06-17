@@ -63,7 +63,7 @@ avenv
 
 ### 🧪 Librerías necesarias
 
-Instálalas con:
+Se instalan con:
 
 ```bash
 pip install psycopg2-binary requests python-dotenv
@@ -71,16 +71,16 @@ pip install psycopg2-binary requests python-dotenv
 
 ## 🚀 Ejecución
 
-Ejecuta el script con:
+Se debe ejecutar el script con:
 
 ```bash
 python3 notificar_renovaciones.py
 ```
 
-Asegúrate de que:
-- El entorno virtual esté activado (si usas uno)
+Se debe asegurar que:
+- El entorno virtual esté activado
 - El archivo `.env` esté en el mismo directorio
-- La base de datos tenga las tablas `telefonos` y `renovaciones` correctamente configuradas
+- La base de datos tenga las tablas `telefonos` y `listado_programas` correctamente configuradas
 
 ## 🗃️ Tablas esperadas
 
@@ -112,9 +112,6 @@ El flujo general del script es el siguiente:
 8. Por cada producto, formatea el mensaje y lo envía vía API de WhatsApp.
 9. Imprime si el mensaje fue enviado correctamente o si hubo errores.
 10. Cierra la conexión a la base de datos.
-
-## 🖼️ Diagrama de Flujo
-
 
 
 ## 📝 Notas
