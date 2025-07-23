@@ -7,6 +7,9 @@ from dotenv import load_dotenv
 from datetime import datetime
 from dateutil.relativedelta import relativedelta #Librería útil para incrementar los meses a la base de datos
 
+print("Inicio de ejecución de script de actualización de BBDDD")
+print("")
+
 # Cargar variables del entorno (.env) (mismas credenciales para la base de datos)
 load_dotenv()
 
@@ -63,5 +66,6 @@ finally:
     if 'conexion' in locals():
         cursor.close()
         conexion.close()
-        print("Conexión cerrada.")
+        print("Conexión cerrada. Fin de la ejecución de script de actualización")
+        print("")
 
