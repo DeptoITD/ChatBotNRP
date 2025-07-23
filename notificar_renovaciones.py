@@ -9,6 +9,8 @@ import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
+print("Inicio de ejecución de script de notificaciones.")
+
 # Cargar variables de entorno desde .env
 load_dotenv()
 
@@ -95,4 +97,4 @@ finally:
     if 'conexion' in locals():
         cursor.close()
         conexion.close()
-        print("Conexión cerrada.")
+        print("Conexión cerrada. Fin de ejecución de script de notificaciones")
